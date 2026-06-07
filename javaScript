@@ -1,0 +1,397 @@
+// ===== GOOGLE OAUTH CONFIGURATION =====
+// Replace these with your actual Google OAuth credentials
+const GOOGLE_CLIENT_ID = '818682789455-ntb6v8q1i9t6d99hvtpvjb60d2kv2hgg.apps.googleusercontent.com';
+
+// ===== SLIDER FUNCTIONALITY =====
+let currentSlideIndex = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+let slideInterval;
+
+function initSlider() {
+    if (slides.length === 0) return;
+    showSlide(0);
+    startAutoSlide();
+}
+
+function showSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+    slides[index].classList.add('active');
+    dots[index].classList.add('active');
+    currentSlideIndex = index;
+}
+
+function changeSlide(direction) {
+    const newIndex = (currentSlideIndex + direction + slides.length) % slides.length;
+    showSlide(newIndex);
+    resetAutoSlide();
+}
+
+function currentSlide(index) {
+    showSlide(index);
+    resetAutoSlide();
+}
+
+function startAutoSlide() {
+    slideInterval = setInterval(() => {
+        changeSlide(1);
+    }, 5000);
+}
+
+function resetAutoSlide() {
+    clearInterval(slideInterval);
+    startAutoSlide();
+}
+
+// ===== MOBILE MENU =====
+function toggleMenu() {
+    const navLinks = document.getElementById('navLinks');
+    navLinks.classList.toggle('show');
+}
+
+// ===== GOOGLE LOGIN =====
+function handleGoogleLogin() {
+    // Initialize Google Sign-In
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleResponse
+        });
+        google.accounts.id.prompt();
+    } else {
+        // Fallback: Simulate successful login for demo
+        simulateGoogleLogin();
+    }
+}
+
+function handleGoogleResponse(response) {
+    // Decode JWT token to get user info
+    try {
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        loginUser(payload);
+    } catch (e) {
+        console.error('Google login error:', e);
+        simulateGoogleLogin();
+    }
+}
+
+function simulateGoogleLogin() {
+    // Demo login for when Google API isn't fully configured
+    const mockUser = {
+        name: 'Demo User',
+        email: 'demo@bulshokaab.com',
+        picture: 'https://ui-avatars.com/api/?name=Demo+User&background=00d4ff&color=fff&size=128'
+    };
+    loginUser(mockUser);
+}
+
+function loginUser(userData) {
+    // Save user to localStorage
+    localStorage.setItem('bulshoUser', JSON.stringify(userData));
+    
+    // Update UI
+    const loginBtn = document.getElementById('googleLoginBtn');
+    const userProfile = document.getElementById('userProfile');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (userProfile) {
+        userProfile.style.display = 'flex';
+        userAvatar.src = userData.picture || 'https://ui-avatars.com/api/?name=User&background=00d4ff&color=fff&size=128';
+        userName.textContent = userData.name || userData.email || 'User';
+    }
+
+    // Show success notification
+    showNotification(`Welcome, ${userData.name || 'User'}!`, 'success');
+}
+
+function logout() {
+    localStorage.removeItem('bulshoUser');
+    
+    const loginBtn = document.getElementById('googleLoginBtn');
+    const userProfile = document.getElementById('userProfile');
+
+    if (loginBtn) loginBtn.style.display = 'block';
+    if (userProfile) userProfile.style.display = 'none';
+
+    // If on dashboard, redirect to home
+    if (window.location.pathname.includes('dashboard')) {
+        window.location.href = 'index.html';
+    }
+
+    showNotification('Logged out successfully', 'info');
+}
+
+function checkLoginStatus() {
+    const userData = JSON.parse(localStorage.getItem('bulshoUser'));
+    if (userData) {
+        loginUser(userData);
+    }
+}
+
+// ===== NOTIFICATION SYSTEM =====
+function showNotification(message, type = 'info') {
+    const notif = document.createElement('div');
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">&times;</button>
+    `;
+    notif.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        background: ${type === 'success' ? '#00c853' : type === 'info' ? '#2196f3' : '#ff5252'};
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        animation: slideIn 0.3s ease;
+    `;
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(notif);
+
+    setTimeout(() => {
+        notif.style.opacity = '0';
+        notif.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+    }, 4000);
+}
+
+// ===== COURSES DATA =====
+const coursesData = [
+    {
+        id: 1,
+        name: 'Nmap - Network Scanning',
+        icon: 'fa-network-wired',
+        category: 'scanning',
+        description: 'Master network discovery and vulnerability scanning with Nmap. Learn port scanning, OS detection, and scripting.',
+        github: 'https://github.com/nmap/nmap',
+        fee: '$49.99'
+    },
+    {
+        id: 2,
+        name: 'Metasploit Framework',
+        icon: 'fa-bug',
+        category: 'exploitation',
+        description: 'Learn exploitation techniques using Metasploit. Understand payloads, exploits, and post-exploitation modules.',
+        github: 'https://github.com/rapid7/metasploit-framework',
+        fee: '$79.99'
+    },
+    {
+        id: 3,
+        name: 'Burp Suite - Web Testing',
+        icon: 'fa-search',
+        category: 'exploitation',
+        description: 'Web application security testing with Burp Suite. Intercept, scan, and exploit web vulnerabilities.',
+        github: 'https://github.com/portswigger/burp-suite',
+        fee: '$69.99'
+    },
+    {
+        id: 4,
+        name: 'Wireshark - Network Analysis',
+        icon: 'fa-eye',
+        category: 'forensics',
+        description: 'Deep dive into network protocol analysis with Wireshark. Capture, filter, and analyze network traffic.',
+        github: 'https://github.com/wireshark/wireshark',
+        fee: '$44.99'
+    },
+    {
+        id: 5,
+        name: 'SpiderFoot - OSINT',
+        icon: 'fa-spider',
+        category: 'osint',
+        description: 'Automate OSINT investigations with SpiderFoot. Gather threat intelligence and map attack surfaces.',
+        github: 'https://github.com/smicallef/spiderfoot',
+        fee: '$54.99'
+    },
+    {
+        id: 6,
+        name: 'SQLMap - SQL Injection',
+        icon: 'fa-database',
+        category: 'exploitation',
+        description: 'Automate SQL injection detection and exploitation. Learn database fingerprinting and data extraction.',
+        github: 'https://github.com/sqlmapproject/sqlmap',
+        fee: '$59.99'
+    },
+    {
+        id: 7,
+        name: 'Trivy - Vulnerability Scanner',
+        icon: 'fa-shield',
+        category: 'scanning',
+        description: 'Container and cloud-native vulnerability scanning. Scan Docker images, repos, and Kubernetes clusters.',
+        github: 'https://github.com/aquasecurity/trivy',
+        fee: '$39.99'
+    },
+    {
+        id: 8,
+        name: 'Hydra - Password Attacks',
+        icon: 'fa-key',
+        category: 'exploitation',
+        description: 'Learn password cracking and authentication testing with Hydra. Brute-force various protocols.',
+        github: 'https://github.com/vanhauser-thc/thc-hydra',
+        fee: '$34.99'
+    },
+    {
+        id: 9,
+        name: 'Lynis - Security Auditing',
+        icon: 'fa-clipboard-check',
+        category: 'scanning',
+        description: 'Security auditing and compliance testing for Linux/Unix systems. Hardening and vulnerability assessment.',
+        github: 'https://github.com/CISOfy/lynis',
+        fee: '$44.99'
+    },
+    {
+        id: 10,
+        name: 'John the Ripper',
+        icon: 'fa-lock',
+        category: 'forensics',
+        description: 'Password cracking and hash analysis. Learn various cracking modes and hash recognition.',
+        github: 'https://github.com/openwall/john',
+        fee: '$39.99'
+    },
+    {
+        id: 11,
+        name: 'theHarvester - OSINT',
+        icon: 'fa-user-secret',
+        category: 'osint',
+        description: 'Gather emails, subdomains, and IPs from public sources. OSINT reconnaissance for pentesting.',
+        github: 'https://github.com/laramics/theHarvester',
+        fee: '$29.99'
+    },
+    {
+        id: 12,
+        name: 'Wazuh - SIEM & XDR',
+        icon: 'fa-chart-line',
+        category: 'forensics',
+        description: 'Open-source security monitoring. Log analysis, file integrity monitoring, and threat detection.',
+        github: 'https://github.com/wazuh/wazuh',
+        fee: '$89.99'
+    }
+];
+
+// ===== RENDER COURSES =====
+function renderCourses(filter = 'all') {
+    const grid = document.getElementById('coursesGrid');
+    if (!grid) return;
+
+    const filtered = filter === 'all' 
+        ? coursesData 
+        : coursesData.filter(c => c.category === filter);
+
+    grid.innerHTML = filtered.map(course => `
+        <div class="course-card" data-category="${course.category}">
+            <div class="course-icon"><i class="fas ${course.icon}"></i></div>
+            <h3>${course.name}</h3>
+            <span class="category">${course.category}</span>
+            <p>${course.description}</p>
+            <a href="${course.github}" target="_blank" class="github-link">
+                <i class="fab fa-github"></i> View on GitHub
+            </a>
+            <br>
+            <span class="fee-tag" onclick="showFeeModal('${course.name}', '${course.fee}')">
+                Fee: ${course.fee}
+            </span>
+        </div>
+    `).join('');
+}
+
+function filterCourses(category) {
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === category || 
+            (category === 'all' && btn.textContent === 'All'));
+    });
+    renderCourses(category);
+}
+
+// ===== COURSE FEE MODAL =====
+function showFeeModal(courseName, fee) {
+    const modal = document.getElementById('feeModal');
+    document.getElementById('modalCourseName').textContent = courseName;
+    document.getElementById('modalCourseFee').textContent = fee;
+    modal.style.display = 'flex';
+}
+
+function closeFeeModal() {
+    document.getElementById('feeModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('feeModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
+
+// ===== CONTACT FORM =====
+function handleContactForm(event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+
+    // Check if user is logged in
+    const user = JSON.parse(localStorage.getItem('bulshoUser'));
+    if (!user) {
+        showNotification('Please login first to send a message', 'info');
+        return false;
+    }
+
+    // Simulate sending
+    console.log('Message sent:', { name, email, subject, message });
+    showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
+    document.getElementById('contactForm').reset();
+    return false;
+}
+
+// ===== DASHBOARD =====
+function loadDashboard() {
+    const user = JSON.parse(localStorage.getItem('bulshoUser'));
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const welcomeEl = document.getElementById('dashboardWelcome');
+    if (welcomeEl) {
+        welcomeEl.innerHTML = `
+            <h1>Welcome, ${user.name || 'User'}!</h1>
+            <p>Email: ${user.email || 'N/A'}</p>
+        `;
+    }
+}
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize slider on homepage
+    initSlider();
+    
+    // Check login status
+    checkLoginStatus();
+    
+    // Render courses on services page
+    renderCourses();
+    
+    // Load dashboard if on dashboard page
+    if (document.getElementById('dashboardWelcome')) {
+        loadDashboard();
+    }
+});

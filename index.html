@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulsho Kaab - Cybersecurity Academy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-shield-halired"></i>
+                <h1>Bulsho Kaab</h1>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Courses</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <button class="btn btn-google" id="googleLoginBtn" onclick="handleGoogleLogin()">
+                    <i class="fab fa-google"></i> Login
+                </button>
+                <div class="user-profile" id="userProfile" style="display:none;">
+                    <img id="userAvatar" src="" alt="User">
+                    <span id="userName"></span>
+                    <button onclick="logout()" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Slider -->
+    <section class="hero">
+        <div class="slider-container">
+            <div class="slide active" style="background: linear-gradient(135deg, #0a0a23, #1a1a4e);">
+                <div class="slide-content">
+                    <h2>Master <span class="highlight">Cybersecurity</span></h2>
+                    <p>Learn from real-world tools used by ethical hackers worldwide</p>
+                    <a href="services.html" class="btn btn-primary">Explore Courses</a>
+                </div>
+            </div>
+            <div class="slide" style="background: linear-gradient(135deg, #1a0a23, #2e1a4e);">
+                <div class="slide-content">
+                    <h2>Hands-on <span class="highlight">Training</span></h2>
+                    <p>Practical labs with Nmap, Metasploit, Burp Suite & more</p>
+                    <a href="services.html" class="btn btn-primary">View Tools</a>
+                </div>
+            </div>
+            <div class="slide" style="background: linear-gradient(135deg, #0a231a, #1a4e3a);">
+                <div class="slide-content">
+                    <h2>Join <span class="highlight">Bulsho Kaab</span></h2>
+                    <p>Become a certified cybersecurity professional today</p>
+                    <a href="about.html" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="slider-nav">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+        </div>
+        <button class="slide-btn prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="slide-btn next" onclick="changeSlide(1)">&#10095;</button>
+    </section>
+
+    <!-- Featured Tools Section -->
+    <section class="featured">
+        <div class="container">
+            <h2 class="section-title">Featured <span class="highlight">Cybersecurity Tools</span></h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>Nmap</h3>
+                    <p>Network discovery and vulnerability scanning</p>
+                    <a href="https://github.com/nmap/nmap" target="_blank" class="btn-small"><i class="fab fa-github"></i> GitHub</a>
+                </div>
+                <div class="tool-card">
+                    <i class="fas fa-bug"></i>
+                    <h3>Metasploit</h3>
+                    <p>Exploitation framework for penetration testing</p>
+                    <a href="https://github.com/rapid7/metasploit-framework" target="_blank" class="btn-small"><i class="fab fa-github"></i> GitHub</a>
+                </div>
+                <div class="tool-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Burp Suite</h3>
+                    <p>Web application security testing platform</p>
+                    <a href="https://github.com/portswigger/burp-suite" target="_blank" class="btn-small"><i class="fab fa-github"></i> GitHub</a>
+                </div>
+                <div class="tool-card">
+                    <i class="fas fa-eye"></h3>
+                    <h3>Wireshark</h3>
+                    <p>Network protocol analyzer</p>
+                    <a href="https://github.com/wireshark/wireshark" target="_blank" class="btn-small"><i class="fab fa-github"></i> GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Bulsho Kaab</h3>
+                    <p>Empowering the next generation of cybersecurity professionals through hands-on training and real-world tools.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="services.html">Courses</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Bulsho Kaab. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Google Sign-In Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="script.js"></script>
+</body>
+</html>
